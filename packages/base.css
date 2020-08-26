@@ -1,0 +1,20 @@
+.zbase-fl {
+  float: left;
+}
+.zbase-fr {
+  float: right;
+}
+.zbase-clearfloat:before,
+.zbase-clearfloat:after {
+  display: table;
+  line-height: 0;
+  content: '';
+}
+.zbase-clearfloat:after {
+  clear: both;
+}
+.zbase-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

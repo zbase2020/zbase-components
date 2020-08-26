@@ -1,5 +1,8 @@
-import { has, isFunction, isObject, isString, isEmpty, deepClone, LocalSto } from 'zbase-utils'
-import MultiWindowBox from './src/multi-window'
+import { has, isFunction, isObject, isString, isEmpty, deepClone, SessionSto } from 'zbase-utils'
+import MultiWindowBox from './src/multi-window-box'
+function isOnFrame () {
+  return self != top
+}
 export class MultiWindow {
   static getInstance () {
     if (!this.instance) {
@@ -43,13 +46,11 @@ export class MultiWindow {
   // 初始化
   init () {
     // 创建一个localStorage
-    this.local = new LocalSto({
+    this.local = new SessionSto({
       name: 'ZBASE_MULTIWINDOW'
     })
+    console.log('local', this.local)
     this.pages = deepClone(this.local.get('pages') || [])
-    this.pagesUrl = this.pages.map(ele => ele.url)
-    this.opens = deepClone(this.local.get('opens') || [])
-    this.opensUrl = this.opens.map(ele => ele.url)
     var _this = this
     Object.defineProperties(this.watcher, {
       'pagesUrl': {
@@ -63,7 +64,7 @@ export class MultiWindow {
         configurable: true,
         enumerable: true,
         get: function (value) {
-          return _this.opens.map(ele => ele.url)
+          return _this.pages.filter(ele => ele.onShow).map(ele => ele.url) || []
         }
       }
     })
@@ -75,6 +76,9 @@ export class MultiWindow {
     }
   }
   formatUrl (url) {
+    if (!url) {
+      return url
+    }
     if (/^https:\/\/|http:\/\//.test(url)) {
       return url
     } else if (typeof window !== 'undefined' && window && window.location && this.routeType === 'history') {
@@ -87,37 +91,35 @@ export class MultiWindow {
   update (eventName) {
     // 持久化
     this.local.set('pages', this.pages)
-    this.local.set('opens', this.opens)
+    // this.local.set('opens', this.opens)
     // 回调
     this.events[eventName] && this.events[eventName]({
       pages: this.pages,
-      opens: this.opens
+      // opens: this.opens
     })
     this.events.change && this.events.change({
       pages: this.pages,
-      opens: this.opens
+      // opens: this.opens
     })
   }
   // 查找下一个显示的窗口
-  findNext (url, isBack) {
+  findNextIndex (url, isBack) {
     var i = this.watcher.pagesUrl.indexOf(url)
     var len = this.pages.length
-    // var j = this.watcher.opensUrl.indexOf(url)
-    var obj = null
+    var index = len - 1
     if (i > -1) {
       if (isBack && this.pages && this.pages[i] && this.pages[i].backUrl) {
         // 返回
-        var j = this.watcher.pagesUrl.indexOf(this.pages[i].backUrl)
-        obj = this.pages[j]
+        index = this.watcher.pagesUrl.indexOf(this.pages[i].backUrl)
       } else {
         // 下一个
-        obj = this.pages[len > (i + 1) ? (i + 1) : (i - 1)]
+        index = len > (i + 1) ? (i + 1) : (i - 1)
       }
-    } else {
-      // 最后一个
-      obj = this.pages[len - 1]
     }
-    return obj
+    return index
+  }
+  findNow () {
+    return this.pages.find(ele => ele.onShow)
   }
   // 打开窗口
   open (info) {
@@ -132,8 +134,17 @@ export class MultiWindow {
     if (isEmpty(info)) {
       throw new Error('url为必传参数')
     }
+    var now = this.findNow()
     var obj = {
-      url: ''
+      url: '',
+      // 加载
+      onLoad: true,
+      // 缓存
+      cache: true,
+      // 显示
+      onShow: true,
+      // 返回的url
+      backUrl: (now && now.url) || ''
     }
     if (isString(info) && info) {
       // 只有一个url
@@ -143,27 +154,42 @@ export class MultiWindow {
       obj = Object.assign({}, obj, info)
     }
     obj.url = this.formatUrl(obj.url)
-    var i = this.watcher.pagesUrl.indexOf(obj.url)
-    var j = this.watcher.opensUrl.indexOf(obj.url)
-    if (i === -1 && j === -1) {
-      // 没有打开，没有显示
-      this.pages.push(obj)
-      // this.opens.push(obj)
-    } else if (i > -1 && j === -1) {
-      // 有打开,没有显示
-      // this.opens.push(obj)
-    } else if (i === -1 && j > -1) {
-      // 没有打开，有显示
-      this.pages.push(obj)
+    obj.onShow = true
+    obj.onLoad = true
+    // var i = this.watcher.pagesUrl.indexOf(obj.url)
+    var i = -1
+    var len = this.pages.length
+    for (var x = 0; x < len; x++) {
+      if (this.pages[x].url === obj.url) {
+        i = x
+      } else {
+        this.pages[x].onShow = false
+      }
     }
-    this.opens = [obj]
+    if (i === -1) {
+      // 没有打开
+      this.pages.push(obj)
+    } else {
+      // 已经打开
+      this.pages.splice(i, 1, obj)
+    }
     this.update('open')
   }
   // 返回
-  back (url) {
+  back () {
+    var now = this.findNow()
+    var index = -1
+    if (now && now.url) {
+      index = this.findNextIndex(now.url, true)
+    }
+    if (this.pages && this.pages.length) {
+      index = index > -1 ? index : 0
+      this.pages[index].onShow = true
+      this.update('back')
+    }
   }
   // 关闭窗口
-  close (info) {
+  close (info, isBack) {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
@@ -173,8 +199,9 @@ export class MultiWindow {
       return
     }
     var url = ''
+    var openArr = this.watcher.opensUrl || []
     if (isEmpty(info)) {
-      url = this.opens && this.opens[0] && this.opens[0].url
+      url = (openArr && openArr[0]) || ''
       // throw new Error('url为必传参数')
     } else if (isString(info) && info) {
       url = info
@@ -183,31 +210,25 @@ export class MultiWindow {
     }
     url = this.formatUrl(url)
     var i = this.watcher.pagesUrl.indexOf(url)
-    var j = this.watcher.opensUrl.indexOf(url)
-    // 显示的
-    if (j > -1 && this.opens.length > 1) {
-      // 至少两个正在显示
-      this.opens.splice(j, 1)
-    } else if (j > -1 && this.opens.length < 2) {
-      // 最多一个正在显示
-      var next = this.findNext(url)
-      if (next && next.url) {
-        this.opens = [next]
-      }
-    }
-    // 打开的
+    var j = openArr.indexOf(url)
+    // 显示的i
     if (i > -1) {
-      // 已打开
+      var nextIndex = this.findNextIndex(url, isBack)
+      if (openArr.length < 2 && nextIndex > -1) {
+        // 下一个显示
+        this.pages[nextIndex].onShow = true
+      }
       this.pages.splice(i, 1)
     }
     this.update('close')
   }
   // 关闭当前窗口并返回
-  closeBack () {
-
+  closeBack (info) {
+    this.close(info, true)
   }
   // 关闭当前窗口并返回刷新
   closeBackRefresh () {
+    this.close(info, true)
 
   }
   // 关闭左边窗口
@@ -224,7 +245,20 @@ export class MultiWindow {
   }
   // 关闭全部窗口
   closeAll () {
+    this.pages.splice(0)
+    this.update('closeAll')
+  }
+  // 隐藏窗口
+  hide (info) {
 
+  }
+  // 隐藏全部窗口
+  hideAll () {
+    var len = this.pages.length
+    for (var i = 0; i < len; i++) {
+      this.pages[i].onShow = false
+    }
+    this.update('hideAll')
   }
 }
 

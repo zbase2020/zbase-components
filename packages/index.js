@@ -1,5 +1,6 @@
 import MultiWindow from './multi-window'
 import './reset.css'
+import './base.css'
 
 const components = [
 ]

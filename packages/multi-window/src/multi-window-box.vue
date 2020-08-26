@@ -1,24 +1,36 @@
 <template>
   <div class="zbase-multiw__wrap">
     <button @click="log">log</button>
-    <div class="zbase-multiw__open">
+    <div
+      class="zbase-multiw__open"
+      v-if="isHasShow"
+    >
       <ul class="zbase-multiw__openlis">
-        <li
-          class="zbase-multiw__openitem"
-          v-for="(item, index) in pageLists"
-          :key="item.url + '' + index"
-          v-show="isOnShow(item)"
-        >
-          <iframe :src="item.url" frameborder="0" style="width:100%;height:100%;"></iframe>
-        </li>
+        <transition-group name="zbase-move">        
+          <li
+            class="zbase-multiw__openitem"
+            v-for="(item, index) in pageLists"
+            :key="item.url + '' + index"
+            v-show="item.onShow"
+          >
+            <iframe
+              v-if="item.onLoad && (item.onShow || item.cache)"
+              :src="item.url"
+              frameborder="0"
+              style="width:100%;height:100%;"></iframe>
+          </li>
+        </transition-group>
       </ul>
     </div>
-    <div class="zbase-multiw__page">
+    <div
+      class="zbase-multiw__page"
+      v-if="!hideFooter"
+    >
       <ul class="zbase-multiw__pagelis">
         <li
           class="zbase-multiw__pageitem"
           :class="{
-            'zbase-multiw__pageitemactive': isOnShow(item)
+            'zbase-multiw__pageitemactive': item.onShow
           }"
           v-for="(item, index) in pageLists"
           :key="item + '' + index"
@@ -36,6 +48,13 @@
 import { MultiWindow } from '../index'
 import { deepHas } from 'zbase-utils'
 export default {
+  name: 'multi-window-box',
+  props: {
+    hideFooter: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       openLists: [],
@@ -44,6 +63,9 @@ export default {
     }
   },
   computed: {
+    isHasShow () {
+      return this.pageLists.some(ele => ele.onShow)
+    },
     openListsUrl () {
       return this.openLists.map(ele => ele.url)
     },
@@ -94,39 +116,20 @@ export default {
 </script>
 
 <style>
-.zbase-fl {
-  float: left;
-}
-.zbase-fr {
-  float: right;
-}
-.zbase-clearfloat:before,
-.zbase-clearfloat:after {
-  display: table;
-  line-height: 0;
-  content: '';
-}
-.zbase-clearfloat:after {
-  clear: both;
-}
-.zbase-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .zbase-multiw__wrap {
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(255,255,255,0.3);
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 .zbase-multiw__open {
-  width: 100%;
-  flex-grow: 1;
-  flex: 1;
-  flex-basis: 0;
+  position: absolute;
+  left: 300px;
+  bottom: 50px;
+  right: 0;
+  height: calc(100vh - 50px);
+  background: green;
 }
 .zbase-multiw__openlis {
   width: 100%;
@@ -167,5 +170,12 @@ export default {
 }
 .zbase-multiw__pageitemactive {
   background: #fff;
+}
+.zbase-move-enter,.zbase-move-leave-to {
+  opacity:  0;
+  transform: translateY(100%);
+}
+.zbase-move-enter-active,.zbase-move-leave-active {
+  transition: all 0.5s ease;
 }
 </style>
