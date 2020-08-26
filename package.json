@@ -1,0 +1,56 @@
+{
+  "name": "zbase-components",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "style": "lib/style/index.css",
+  "description": "常用组件库",
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "lib": "vue-cli-service build --target lib --name zbase-components --dest lib packages/index.js"
+  },
+  "keywords": [
+    "vue",
+    "components",
+    "multi-window"
+  ],
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zbase2020/zbase-components.git"
+  },
+  "author": "zbase2020",
+  "homepage": "https://github.com/zbase2020/zbase-components",
+  "bugs": {
+    "url": "https://github.com/zbase2020/zbase-components/issues"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "core-js": "^3.3.2",
+    "vue": "^2.6.10",
+    "vue-router": "^3.1.3"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.11.0",
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-plugin-eslint": "^4.0.0",
+    "@vue/cli-plugin-router": "^4.0.0",
+    "@vue/cli-plugin-vuex": "^4.0.0",
+    "@vue/cli-service": "^4.0.0",
+    "@vue/eslint-config-prettier": "^5.0.0",
+    "babel-eslint": "^10.0.3",
+    "babel-plugin-component": "^1.1.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "prettier": "^1.18.2",
+    "sass": "^1.18.0",
+    "sass-loader": "^7.1.0",
+    "vue-template-compiler": "^2.6.10",
+    "zbase-utils": "^1.0.1"
+  }
+}
