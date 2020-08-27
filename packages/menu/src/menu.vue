@@ -112,5 +112,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../style/menu.scss';
+@import '../../../src/style/menu.scss';
 </style>

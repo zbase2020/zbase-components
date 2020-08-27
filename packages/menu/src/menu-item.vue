@@ -14,7 +14,7 @@
 
 <script>
 import menuMixins from './menu-mixins'
-import emitter from '../../utils/emitter'
+import emitter from '../../../src/utils/emitter'
 export default {
   componentName: 'ZbaseMenuItem',
   name: 'ZbaseMenuItem',
