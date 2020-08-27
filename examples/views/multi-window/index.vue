@@ -1,7 +1,7 @@
 <template>
   <div class="demomw-wrap">
     <div>
-
+      
     </div>
     <input type="text" v-model="url">
     <button @click="open">打开新窗口</button>

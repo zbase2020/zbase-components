@@ -1,3 +1,5 @@
-import Menu from './src/index'
-Menu.install = Vue => Vue.component(Menu.name, Menu)
+import Menu from './src/menu'
+Menu.install = Vue => {
+  Vue.component(Menu.name, Menu)
+}
 export default Menu

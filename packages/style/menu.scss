@@ -1,0 +1,51 @@
+.zbase-menu {
+  width: 100%;
+  background: #222945;
+  color: #ccc;
+  text-align: center;
+}
+.zbase-horizontal {
+
+}
+.zbase-vertical {
+  width: 150px;
+}
+.zbase-submenu {
+  position: relative;
+}
+.zbase-submenu:hover > .zbase-submenu__child {
+  opacity: 1;
+  display: block;
+}
+.zbase-submenu__child {
+  position: absolute;
+  z-index: 999;
+  left: 100%;
+  top: 0;
+  background: #222945;
+  border-radius: 4px;
+  opacity: 0;
+  transition: 0.3s;
+  display: none;
+}
+.zbase-menu-item {
+  color: #ccc;
+  display: inline-block;
+  width: 80px;
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.zbase-menu-item:last-child {
+  margin-bottom: 0;
+}
+.zbase-menu-item:hover {
+  background: #394267;
+  color: #fff;
+}
+.zbase-menu__active {
+  background: #394267;
+  color: #fff;
+}
