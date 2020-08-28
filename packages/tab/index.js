@@ -47,15 +47,6 @@ export class Tab {
     } catch (e) {
       this.tabs = []
     }
-    this.tabs = [
-      {fullPath: '/aaa', meta: {title: 'aaaaaaaaa'}},
-      {fullPath: '/bbb', meta: {title: 'bbbbbbbbb'}},
-      {fullPath: '/ccc', meta: {title: 'ccccccccc'}},
-      {fullPath: '/ddd', meta: {title: 'ddddddddd'}},
-      {fullPath: '/eee', meta: {title: 'eeeeeeeee'}},
-      {fullPath: '/fff', meta: {title: 'fffffffff'}},
-      {fullPath: '/ggg', meta: {title: 'ggggggggg'}},
-    ]
   }
   // 监听
   on (type, fn) {
@@ -92,6 +83,9 @@ export class Tab {
   }
   // 打开窗口
   open (to) {
+    if ((to && to.fullPath) === this.indexPath) {
+      return
+    }
     var obj = {
       fullPath: to.fullPath || '',
       hash: to.hash || '',
@@ -119,12 +113,15 @@ export class Tab {
     }
     var i = this.tabs.findIndex(ele => ele.fullPath === fullPath)
     var next = {
-      path: '/'
+      path: this.indexPath || '/'
     }
     if (i > -1) {
       // 已经打开过
       var nextIndex = this.findNextIndex(fullPath, isBack)
-      next = this.tabs[nextIndex]
+      if (nextIndex > -1) {
+        // 有下一个
+        next = this.tabs[nextIndex]
+      }
       this.tabs.splice(i, 1)
       this.updateDb('close')
       this.events.go && this.events.go(next)

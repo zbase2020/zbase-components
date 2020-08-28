@@ -63,6 +63,9 @@ export class MultiWindow {
         }
       }
     })
+    this.events.change && this.events.change({
+      pages: this.pages
+    })
   }
   // 监听
   on (type, fn) {
@@ -131,6 +134,8 @@ export class MultiWindow {
     }
     var now = this.findNow()
     var obj = {
+      // 原始url
+      originUrl: '',
       url: '',
       // 加载
       onLoad: true,
@@ -148,6 +153,7 @@ export class MultiWindow {
     if (isObject(info) && info.url) {
       obj = Object.assign({}, obj, info)
     }
+    obj.originUrl = obj.url
     obj.url = this.formatUrl(obj.url)
     obj.onShow = true
     obj.onLoad = true
@@ -175,7 +181,7 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.back',
         data: info
       })
       return
@@ -213,7 +219,6 @@ export class MultiWindow {
     }
     url = this.formatUrl(url)
     var i = this.watcher.pagesUrl.indexOf(url)
-    var j = openArr.indexOf(url)
     // 显示的i
     if (i > -1) {
       var nextIndex = this.findNextIndex(url, isBack)
@@ -230,7 +235,7 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.closeBack',
         data: info
       })
       return
@@ -242,7 +247,7 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.closeBackRefresh',
         data: info
       })
       return
@@ -267,7 +272,7 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.closeAll',
         data: info
       })
       return
@@ -280,10 +285,27 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.hide',
         data: info
       })
       return
+    }
+    var url = ''
+    var openArr = this.watcher.opensUrl || []
+    if (isEmpty(info)) {
+      url = (openArr && openArr[0]) || ''
+      // throw new Error('url为必传参数')
+    } else if (isString(info) && info) {
+      url = info
+    } else if (isObject(info) && info && info.url) {
+      url = info.url
+    }
+    url = this.formatUrl(url)
+    var i = this.watcher.pagesUrl.indexOf(url)
+    // 显示的i
+    if (i > -1) {
+      this.pages[i].onShow = false
+      this.updateDb('hide')
     }
   }
   // 隐藏全部窗口
@@ -291,7 +313,7 @@ export class MultiWindow {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
-        type: 'multiWindow.open',
+        type: 'multiWindow.hideAll',
         data: info
       })
       return
