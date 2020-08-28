@@ -10,7 +10,7 @@
       <button @click="hideAll">隐藏</button>
     </div>
     <div class="demomw-box">
-      <MultiWindowBox />
+      <ZbaseMultiWindowBox :hideFooter="false" />
     </div>
   </div>
 </template>

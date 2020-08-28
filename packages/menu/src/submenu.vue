@@ -78,17 +78,12 @@ export default {
       delete this.items[item.index];
     },
     addSubmenu(item) {
-      console.log('addSubmenu-->', item)
       this.$set(this.submenus, item.index, item);
     },
     removeSubmenu(item) {
       delete this.submenus[item.index];
     },
     handleClick() {
-      console.log('active', this.active)
-      console.log('submenus', this.submenus)
-      console.log('allIndex', this.allIndex)
-      console.log('rootMenu.activeIndex', this.rootMenu.activeIndex)
       const { rootMenu, disabled } = this;
       if (
         (rootMenu.menuTrigger === 'hover' && rootMenu.mode === 'horizontal') ||

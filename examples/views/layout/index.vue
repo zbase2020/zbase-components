@@ -19,6 +19,7 @@
         </template>
       </zbase-menu>
     </div>
+    <ZbaseTabBox :tabName="'tab'"></ZbaseTabBox>
     <router-view></router-view>
   </div>
 </template>
@@ -49,11 +50,11 @@ export default {
               children: [
                 {
                   name: '窗口2.1',
-                  path: '/345322.1'
+                  path: 'tab'
                 },
                 {
                   name: '窗口2.2',
-                  path: '/dfg3422.2'
+                  path: '/tab'
                 }
               ]
             }

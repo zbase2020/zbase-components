@@ -1,5 +1,5 @@
 import { has, isFunction, isObject, isString, isEmpty, deepClone, SessionSto } from 'zbase-utils'
-import MultiWindowBox from './src/multi-window-box'
+import ZbaseMultiWindowBox from './src/multi-window-box'
 function isOnFrame () {
   return self != top
 }
@@ -15,17 +15,13 @@ export class MultiWindow {
     this.instance = null
     // 当前打开的多窗口
     this.pages = []
-    this.pagesUrl = []
-    // 当前显示的多窗口
-    this.opens = []
-    this.opensUrl = []
     // 数据监听
     this.watcher = {
       pagesUrl: [],
       opensUrl: []
     }
     // 数据存储
-    this.local = {}
+    this.db = {}
     // 事件回调
     this.events = {
       change: null,
@@ -45,12 +41,11 @@ export class MultiWindow {
   }
   // 初始化
   init () {
-    // 创建一个localStorage
-    this.local = new SessionSto({
+    // 创建一个sessionStorage
+    this.db = new SessionSto({
       name: 'ZBASE_MULTIWINDOW'
     })
-    console.log('local', this.local)
-    this.pages = deepClone(this.local.get('pages') || [])
+    this.pages = deepClone(this.db.get('pages') || [])
     var _this = this
     Object.defineProperties(this.watcher, {
       'pagesUrl': {
@@ -88,10 +83,10 @@ export class MultiWindow {
     }
     return url
   }
-  update (eventName) {
-    // 持久化
-    this.local.set('pages', this.pages)
-    // this.local.set('opens', this.opens)
+  // 持久化
+  updateDb (eventName) {
+    this.db.set('pages', this.pages)
+    // this.db.set('opens', this.opens)
     // 回调
     this.events[eventName] && this.events[eventName]({
       pages: this.pages,
@@ -173,10 +168,18 @@ export class MultiWindow {
       // 已经打开
       this.pages.splice(i, 1, obj)
     }
-    this.update('open')
+    this.updateDb('open')
   }
   // 返回
   back () {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
     var now = this.findNow()
     var index = -1
     if (now && now.url) {
@@ -185,7 +188,7 @@ export class MultiWindow {
     if (this.pages && this.pages.length) {
       index = index > -1 ? index : 0
       this.pages[index].onShow = true
-      this.update('back')
+      this.updateDb('back')
     }
   }
   // 关闭窗口
@@ -220,14 +223,30 @@ export class MultiWindow {
       }
       this.pages.splice(i, 1)
     }
-    this.update('close')
+    this.updateDb('close')
   }
   // 关闭当前窗口并返回
   closeBack (info) {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
     this.close(info, true)
   }
   // 关闭当前窗口并返回刷新
   closeBackRefresh () {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
     this.close(info, true)
 
   }
@@ -245,26 +264,49 @@ export class MultiWindow {
   }
   // 关闭全部窗口
   closeAll () {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
     this.pages.splice(0)
-    this.update('closeAll')
+    this.updateDb('closeAll')
   }
   // 隐藏窗口
   hide (info) {
-
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
   }
   // 隐藏全部窗口
   hideAll () {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.open',
+        data: info
+      })
+      return
+    }
     var len = this.pages.length
     for (var i = 0; i < len; i++) {
       this.pages[i].onShow = false
     }
-    this.update('hideAll')
+    this.updateDb('hideAll')
   }
 }
 
 export default {
   install (Vue) {
     Vue.prototype.$multiWindow = MultiWindow.getInstance()
-    Vue.component('MultiWindowBox', MultiWindowBox)
+    Vue.component('ZbaseMultiWindowBox', ZbaseMultiWindowBox)
   }
 }

@@ -1,0 +1,62 @@
+.zbase-tab {
+  height: 50px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: #0d79e8;
+  color: #fff;
+  .el-tabs__header {
+    margin: 0;
+  }
+  .el-tabs--card>.el-tabs__header {
+    border-bottom: none;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__nav {
+    border: none;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item {
+    border-bottom: none;
+    border-left: none;
+    color: #fff;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+    background: #fff;
+    color: #222945;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+  .el-tabs__nav-next, .el-tabs__nav-prev {
+    line-height: 40px;
+    font-size: 20px;
+    color: #fff;
+  }
+}
+.zbase-tab__main {
+  flex: 1;
+  flex-basis: 0;
+  flex-grow: 1;
+  padding-top: 10px;
+  overflow: auto;
+  overflow-y: hidden;
+}
+.zbase-tab__lists {
+}
+.zbase-tab__item {
+  display: inline-block;
+  width: 500px;
+}
+.zbase-tab__tool {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.zbase-tab__toolbtn {
+  margin: 0 5px;
+  font-size: 25px;
+  color: #fff;
+  cursor: pointer;
+}

@@ -1,8 +1,9 @@
 <template>
   <div class="zbase-multiw__wrap">
-    <button @click="log">log</button>
+    <button @click="log" v-show="false">log</button>
     <div
       class="zbase-multiw__open"
+      :style="hideFooter ? 'height:100vh;bottom:0;' : ''"
       v-if="isHasShow"
     >
       <ul class="zbase-multiw__openlis">
@@ -75,7 +76,8 @@ export default {
   },
   methods: {
     log () {
-      this.multiWindow.close()
+      // this.multiWindow.close()
+      console.log('multiWindow-->', this.multiWindow)
     },
     // 当前是否显示
     isOnShow (item) {

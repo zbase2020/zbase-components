@@ -4,7 +4,8 @@
     [
       "component",
       {
-        "libraryName": "zbase-components"
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
       }
     ]
   ]
