@@ -3,7 +3,7 @@
     <button @click="log" v-show="false">log</button>
     <div
       class="zbase-multiw__open"
-      :style="hideFooter ? 'height:100vh;bottom:0;' : ''"
+      :style="pageStyle"
       v-if="isHasShow"
     >
       <ul class="zbase-multiw__openlis">
@@ -25,7 +25,7 @@
     </div>
     <div
       class="zbase-multiw__page"
-      v-if="!hideFooter"
+      v-if="!isHideFooter"
     >
       <ul class="zbase-multiw__pagelis">
         <li
@@ -51,37 +51,52 @@ import { deepHas } from 'zbase-utils'
 export default {
   name: 'multi-window-box',
   props: {
+    // 隐藏底部
     hideFooter: {
       type: Boolean,
       default: false
+    },
+    // 正常窗口下左边距离
+    left: {
+      type: String,
+      default: '300px'
     }
   },
   data () {
     return {
-      openLists: [],
+      multiWindow: null,
       pageLists: [],
-      multiWindow: null
+      size: 'normal',
+      // 是否隐藏底部
+      isHideFooter: false
     }
   },
   computed: {
+    pageStyle() {
+      let style = this.isHideFooter ? 'height:100vh;bottom:0;' : ''
+      if (this.size === 'large') {
+        style += 'left:0;'
+      } else {
+        style += `left:${this.left};`
+      }
+      return style
+    },
     isHasShow () {
       return this.pageLists.some(ele => ele.onShow)
     },
-    openListsUrl () {
-      return this.openLists.map(ele => ele.url)
-    },
     pageListsUrl () {
       return this.pageLists.map(ele => ele.url)
+    }
+  },
+  watch: {
+    hideFooter (val) {
+      this.multiWindow.changeFooter(val)
     }
   },
   methods: {
     log () {
       // this.multiWindow.close()
       console.log('multiWindow-->', this.multiWindow)
-    },
-    // 当前是否显示
-    isOnShow (item) {
-      return this.openListsUrl.indexOf(item.url) > -1
     },
     // 打开窗口
     open (item) {
@@ -92,9 +107,10 @@ export default {
       this.multiWindow.close(item)
     },
     handleChange () {
-      this.multiWindow.on('change', (obj) => {
-        this.openLists = (obj && obj.opens) || []
+      this.multiWindow.on('boxChange', (obj) => {
         this.pageLists = (obj && obj.pages) || []
+        this.size = (obj && obj.size) || 'normal'
+        this.isHideFooter = (obj && obj.hideFooter) || false
       })
     },
     handleReceiveMessage (info) {
@@ -108,9 +124,10 @@ export default {
     }
   },
   mounted () {
+    this.isHideFooter = this.hideFooter
     this.multiWindow = MultiWindow.getInstance()
-    this.openLists = this.multiWindow.opens
     this.pageLists = this.multiWindow.pages
+    this.size = this.multiWindow.size
     window.addEventListener('message', this.handleReceiveMessage)
     this.handleChange()
   }
@@ -132,6 +149,7 @@ export default {
   right: 0;
   height: calc(100vh - 50px);
   background: green;
+  transition: 0.3s;
 }
 .zbase-multiw__openlis {
   width: 100%;

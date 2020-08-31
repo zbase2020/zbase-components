@@ -80,7 +80,7 @@ Vue.use(Icon)
 export default {
   name: 'ZbaseTabBox',
   props: {
-    tabName: {
+    dbName: {
       default: 'ZBASE_TAB',
       validator: val => typeof val === 'string'
     }
@@ -191,7 +191,7 @@ export default {
     handleTabsEdit (tagName, action) {
       if (action === 'remove') {
         this.close({
-          tagName
+          fullPath: tagName
         })
       }
     },
@@ -205,7 +205,7 @@ export default {
       this.$router.push(item.fullPath)
     },
     handleOn () {
-      this.tab.on('change', (e) => {
+      this.tab.on('boxChange', (e) => {
         this.lists = (e && e.tabs) || []
       })
       this.tab.on('go', (e) => {
@@ -214,7 +214,7 @@ export default {
     }
   },
   mounted () {
-    this.tab = Tab.getInstance(this.tabName)
+    this.tab = Tab.getInstance(this.dbName)
     this.lists = this.tab.tabs || []
     this.handleOn()
   }

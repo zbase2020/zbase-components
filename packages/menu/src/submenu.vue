@@ -4,8 +4,10 @@
       'zbase-submenu': true
     }"
     @click="handleClick"
+    @mouseleave="handleMouseLeave"
+    @mouseenter="handleMouseEnter"
   >
-    <div
+    <li
       :class="{
         'zbase-menu-item': true,
         'zbase-menu__active': active
@@ -13,10 +15,12 @@
     >
       <slot name="icon"></slot>
       <slot name="title">{{title}}</slot>
-    </div>
-    <div class="zbase-submenu__child">
-      <slot></slot>
-    </div>
+    </li>
+    <transition name="zbase-menufade">    
+      <div class="zbase-submenu__child" v-show="showChild">
+        <slot></slot>
+      </div>
+    </transition>
   </ul>
 </template>
 
@@ -53,14 +57,16 @@ export default {
       // 全部的子级index
       // allIndex: [],
       items: {},
-      submenus: {}
+      submenus: {},
+      showChild: false,
+      showChildTimer: null
     }
   },
   computed: {
     allIndex () {
       let arr = keys(this.items) || []
       let obj = this.submenus
-      while (!isEmpty(obj.items) && !isEmpty(obj.submenus)) {
+      while (!isEmpty(obj.items) || !isEmpty(obj.submenus)) {
         arr.concat(keys(obj.items) || [])
         obj = obj.submenus || {}
       }
@@ -71,6 +77,19 @@ export default {
     }
   },
   methods: {
+    // 鼠标移入
+    handleMouseEnter () {
+      clearTimeout(this.showChildTimer)
+      this.showChildTimer = null
+      this.showChild = true
+    },
+    // 鼠标移开
+    handleMouseLeave () {
+      clearTimeout(this.showChildTimer)
+      this.showChildTimer = setTimeout(() => {
+        this.showChild = false
+      }, 300);
+    },
     addItem(item) {
       this.$set(this.items, item.index, item);
     },
@@ -102,6 +121,8 @@ export default {
   beforeDestroy () {
     this.rootMenu.removeSubmenu(this)
     this.parentMenu.removeSubmenu(this)
+    clearTimeout(this.showChildTimer)
+    this.showChildTimer = null
   }
 }
 </script>

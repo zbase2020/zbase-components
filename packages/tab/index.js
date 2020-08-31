@@ -1,26 +1,27 @@
 import ZbaseTabBox from './src/tab-box'
 import { has, isFunction, isObject, isString, isEmpty, deepClone, SessionSto } from 'zbase-utils'
 export class Tab {
-  static getInstance (name) {
+  static getInstance (config) {
     if (!this.instance) {
-      this.instance = new Tab(name)
+      this.instance = new Tab(config)
     }
     return this.instance
   }
 
-  constructor (name) {
+  constructor (config) {
     this.instance = null
     // 当前打开的多tab
     this.tabs = []
     // 当前页面
     this.current = ''
     // 首页路径
-    this.indexPath = '/'
+    this.indexPath = (config && config.indexPath) || '/'
     // 数据存储
-    this.name = name || 'ZBASE_TAB'
+    this.name = (config && config.dbName) || 'ZBASE_TAB'
     this.db = {}
     // 事件回调
     this.events = {
+      boxChange: null,
       change: null,
       open: null,
       back: null,
@@ -62,6 +63,9 @@ export class Tab {
       tabs: this.tabs
     })
     this.events.change && this.events.change({
+      tabs: this.tabs
+    })
+    this.events.boxChange && this.events.boxChange({
       tabs: this.tabs
     })
   }
@@ -124,7 +128,9 @@ export class Tab {
       }
       this.tabs.splice(i, 1)
       this.updateDb('close')
-      this.events.go && this.events.go(next)
+      if (fullPath === this.current) {
+        this.events.go && this.events.go(next)
+      }
     }
   }
   // 关闭当前窗口并返回
@@ -193,7 +199,7 @@ export class Tab {
 
 export default {
   install (Vue, opt) {
-    Vue.prototype.$tab = Tab.getInstance(opt && opt.tabName)
+    Vue.prototype.$tab = Tab.getInstance(opt && opt.dbName)
     Vue.component('ZbaseTabBox', ZbaseTabBox)
   }
 }

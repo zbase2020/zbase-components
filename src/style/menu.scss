@@ -26,7 +26,7 @@
   border-radius: 4px;
   opacity: 0;
   transition: 0.3s;
-  display: none;
+  // display: none;
 }
 .zbase-menu-item {
   color: #ccc;
@@ -48,4 +48,10 @@
 .zbase-menu__active {
   background: #394267;
   color: #fff;
+}
+.zbase-menufade-enter,.zbase-menufade-leave-to {
+  opacity:  0;
+}
+.zbase-menufade-enter-active,.zbase-menufade-leave-active {
+  transition: all 0.2s ease;
 }

@@ -1,16 +1,21 @@
 <template>
   <div class="demomw-wrap">
-    <div>
-      
-    </div>
-    <input type="text" v-model="url">
-    <button @click="open">打开新窗口</button>
-    <button @click="close">关闭窗口</button>
-    <div>
-      <button @click="hideAll">隐藏</button>
+    <div style="position:fixed;z-index:9999;">      
+      <input type="text" v-model="url">
+      <button @click="open">打开新窗口</button>
+      <button @click="close">关闭窗口</button>
+      <div>
+        <button @click="handleChnageSize('')">正常</button>
+        <button @click="handleChnageSize('large')">最大化</button>
+        <button @click="hideAll">隐藏</button>
+      </div>
+      <div>
+        <button @click="handleChangeFooter()">隐藏底部</button>
+        <button @click="handleChangeFooter(false)">显示底部</button>
+      </div>
     </div>
     <div class="demomw-box">
-      <ZbaseMultiWindowBox :hideFooter="false" />
+      <ZbaseMultiWindowBox :hideFooter="true" :left="'360px'" />
     </div>
   </div>
 </template>
@@ -23,6 +28,12 @@ export default {
     }
   },
   methods: {
+    handleChnageSize (size) {
+      this.$multiWindow.changeSize(size)
+    },
+    handleChangeFooter (val) {
+      this.$multiWindow.changeFooter(val)
+    },
     open () {
       // 打开新窗口
       this.$multiWindow.open(this.url)

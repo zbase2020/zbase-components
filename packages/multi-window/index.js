@@ -4,17 +4,21 @@ function isOnFrame () {
   return self != top
 }
 export class MultiWindow {
-  static getInstance () {
+  static getInstance (config) {
     if (!this.instance) {
-      this.instance = new MultiWindow()
+      this.instance = new MultiWindow(config)
     }
     return this.instance
   }
-  constructor (props) {
+  constructor (config) {
     // 单例
     this.instance = null
     // 当前打开的多窗口
     this.pages = []
+    // 窗口大小
+    this.size = (config && config.size) || 'normal'
+    // 隐藏底部
+    this.hideFooter = (config && this.hideFooter) || false
     // 数据监听
     this.watcher = {
       pagesUrl: [],
@@ -24,6 +28,7 @@ export class MultiWindow {
     this.db = {}
     // 事件回调
     this.events = {
+      boxChange: null,
       change: null,
       open: null,
       back: null,
@@ -33,7 +38,9 @@ export class MultiWindow {
       closeLeft: null,
       closeRight: null,
       closeOther: null,
-      closeAll: null
+      closeAll: null,
+      sizeChange: null,
+      changeFooter: null
     }
     // history hash
     this.routeType = 'hash'
@@ -46,6 +53,8 @@ export class MultiWindow {
       name: 'ZBASE_MULTIWINDOW'
     })
     this.pages = deepClone(this.db.get('pages') || [])
+    this.size = this.db.get('size') || this.size
+    this.hideFooter = this.db.get('hideFooter') || this.hideFooter
     var _this = this
     Object.defineProperties(this.watcher, {
       'pagesUrl': {
@@ -64,7 +73,14 @@ export class MultiWindow {
       }
     })
     this.events.change && this.events.change({
-      pages: this.pages
+      pages: this.pages,
+      size: this.size,
+      hideFooter: this.hideFooter
+    })
+    this.events.boxChange && this.events.boxChange({
+      pages: this.pages,
+      size: this.size,
+      hideFooter: this.hideFooter
     })
   }
   // 监听
@@ -88,17 +104,27 @@ export class MultiWindow {
   }
   // 持久化
   updateDb (eventName) {
-    this.db.set('pages', this.pages)
-    // this.db.set('opens', this.opens)
     // 回调
     this.events[eventName] && this.events[eventName]({
       pages: this.pages,
-      // opens: this.opens
+      size: this.size,
+      hideFooter: this.hideFooter
     })
     this.events.change && this.events.change({
       pages: this.pages,
-      // opens: this.opens
+      size: this.size,
+      hideFooter: this.hideFooter
     })
+    this.events.boxChange && this.events.boxChange({
+      pages: this.pages,
+      size: this.size,
+      hideFooter: this.hideFooter
+    })
+    if (self == top) {
+      this.db.set('pages', this.pages)
+      this.db.set('size', this.size)
+      this.db.set('hideFooter', this.hideFooter)
+    }
   }
   // 查找下一个显示的窗口
   findNextIndex (url, isBack) {
@@ -127,7 +153,7 @@ export class MultiWindow {
         type: 'multiWindow.open',
         data: info
       })
-      return
+      // return
     }
     if (isEmpty(info)) {
       throw new Error('url为必传参数')
@@ -184,7 +210,7 @@ export class MultiWindow {
         type: 'multiWindow.back',
         data: info
       })
-      return
+      // return
     }
     var now = this.findNow()
     var index = -1
@@ -205,7 +231,7 @@ export class MultiWindow {
         type: 'multiWindow.close',
         data: info
       })
-      return
+      // return
     }
     var url = ''
     var openArr = this.watcher.opensUrl || []
@@ -238,7 +264,7 @@ export class MultiWindow {
         type: 'multiWindow.closeBack',
         data: info
       })
-      return
+      // return
     }
     this.close(info, true)
   }
@@ -250,7 +276,7 @@ export class MultiWindow {
         type: 'multiWindow.closeBackRefresh',
         data: info
       })
-      return
+      // return
     }
     this.close(info, true)
 
@@ -275,7 +301,7 @@ export class MultiWindow {
         type: 'multiWindow.closeAll',
         data: info
       })
-      return
+      // return
     }
     this.pages.splice(0)
     this.updateDb('closeAll')
@@ -288,7 +314,7 @@ export class MultiWindow {
         type: 'multiWindow.hide',
         data: info
       })
-      return
+      // return
     }
     var url = ''
     var openArr = this.watcher.opensUrl || []
@@ -309,14 +335,14 @@ export class MultiWindow {
     }
   }
   // 隐藏全部窗口
-  hideAll () {
+  hideAll (info) {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
         type: 'multiWindow.hideAll',
         data: info
       })
-      return
+      // return
     }
     var len = this.pages.length
     for (var i = 0; i < len; i++) {
@@ -324,11 +350,41 @@ export class MultiWindow {
     }
     this.updateDb('hideAll')
   }
+  // 切换窗口大小
+  changeSize (size) {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.changeSize',
+        data: size
+      })
+      // return
+    }
+    this.size = size
+    this.updateDb('sizeChange')
+  }
+  // 切换底部
+  changeFooter (bol) {
+    // 更新主窗口
+    if (self != top) {
+      window.parent.postMessage({
+        type: 'multiWindow.changeFooter',
+        data: bol
+      })
+      // return
+    }
+    if (bol !== undefined) {
+      this.hideFooter = bol
+    } else {
+      this.hideFooter = !this.hideFooter
+    }
+    this.updateDb('changeFooter')
+  }
 }
 
 export default {
-  install (Vue) {
-    Vue.prototype.$multiWindow = MultiWindow.getInstance()
+  install (Vue, opt) {
+    Vue.prototype.$multiWindow = MultiWindow.getInstance(opt)
     Vue.component('ZbaseMultiWindowBox', ZbaseMultiWindowBox)
   }
 }

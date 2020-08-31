@@ -19,7 +19,7 @@
         </template>
       </zbase-menu>
     </div>
-    <ZbaseTabBox :tabName="'tab'"></ZbaseTabBox>
+    <ZbaseTabBox :dbName="$pageConfig && $pageConfig.dbName"></ZbaseTabBox>
     <router-view></router-view>
   </div>
 </template>
@@ -64,6 +64,26 @@ export default {
           name: '菜单',
           path: '/menu',
           children: []
+        },
+        {
+          name: '测试',
+          path: '/test',
+          children: [
+            {
+              name: '测试-前',
+              path: '/test-before'
+            },
+            {
+              name: '测试-中',
+              path: '/test-on',
+              children: [
+                {
+                  name: '测试-后',
+                  path: '/test-after'
+                },
+              ]
+            },
+          ]
         }
       ]
     }
