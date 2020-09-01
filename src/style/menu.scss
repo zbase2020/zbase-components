@@ -24,8 +24,13 @@
   opacity: 0;
   transition: 0.3s;
   max-height: 100vh;
-  // overflow: auto;
+  overflow-y: auto;
+  // overflow: hidden;
   // display: none;
+}
+.zbase-submenu__childx {
+  overflow-y: auto;
+  overflow-x: visible;
 }
 .zbase-menu-item {
   color: #ccc;

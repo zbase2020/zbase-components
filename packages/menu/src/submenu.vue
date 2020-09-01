@@ -17,8 +17,10 @@
       <slot name="title">{{title}}</slot>
     </li>
     <transition name="zbase-menufade">    
-      <div class="zbase-submenu__child" v-show="showChild">
-        <slot></slot>
+      <div class="zbase-submenu__child" v-show="showChild" ref="child">
+        <div class="zbase-submenu__childx">
+          <slot></slot>
+        </div>
       </div>
     </transition>
   </ul>
@@ -28,6 +30,7 @@
 import { keys, isEmpty } from 'zbase-utils'
 import menuMixins from './menu-mixins'
 import emitter from '../../../src/utils/emitter'
+import dom from '../../../src/utils/dom'
 export default {
   componentName: 'ZbaseSubmenu',
   name: 'ZbaseSubmenu',
@@ -82,6 +85,15 @@ export default {
       clearTimeout(this.showChildTimer)
       this.showChildTimer = null
       this.showChild = true
+      this.$nextTick(() => {
+        try {
+          var bot = dom.getBottom(this.$refs.child)
+          if (bot < 0) {
+            this.$refs.child.style.top = bot + 'px'
+          }
+        } catch (e) {
+        }
+      })
     },
     // 鼠标移开
     handleMouseLeave () {
