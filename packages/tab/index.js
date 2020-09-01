@@ -199,7 +199,7 @@ export class Tab {
 
 export default {
   install (Vue, opt) {
-    Vue.prototype.$tab = Tab.getInstance(opt && opt.dbName)
+    Vue.prototype.$tab = Tab.getInstance(opt)
     Vue.component('ZbaseTabBox', ZbaseTabBox)
   }
 }

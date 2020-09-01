@@ -169,6 +169,8 @@ export class MultiWindow {
       cache: true,
       // 显示
       onShow: true,
+      // 窗口大小
+      size: '',
       // 返回的url
       backUrl: (now && now.url) || ''
     }
@@ -183,6 +185,10 @@ export class MultiWindow {
     obj.url = this.formatUrl(obj.url)
     obj.onShow = true
     obj.onLoad = true
+    // 设置窗口大小
+    if (obj.size) {
+      this.changeSize(obj.size)
+    }
     // var i = this.watcher.pagesUrl.indexOf(obj.url)
     var i = -1
     var len = this.pages.length

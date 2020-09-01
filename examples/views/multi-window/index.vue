@@ -2,7 +2,8 @@
   <div class="demomw-wrap">
     <div style="position:fixed;z-index:9999;">      
       <input type="text" v-model="url">
-      <button @click="open">打开新窗口</button>
+      <button @click="open">打开窗口</button>
+      <button @click="openLarge">打开大窗口</button>
       <button @click="close">关闭窗口</button>
       <div>
         <button @click="handleChnageSize('')">正常</button>
@@ -15,7 +16,9 @@
       </div>
     </div>
     <div class="demomw-box">
-      <ZbaseMultiWindowBox :hideFooter="true" :left="'360px'" />
+      <ZbaseMultiWindowBox
+        :hideFooter="true"
+        :left="'210px'" />
     </div>
   </div>
 </template>
@@ -34,9 +37,18 @@ export default {
     handleChangeFooter (val) {
       this.$multiWindow.changeFooter(val)
     },
+    openLarge () {
+      this.$multiWindow.open({
+        url: this.url,
+        size: 'large'
+      })
+    },
     open () {
       // 打开新窗口
-      this.$multiWindow.open(this.url)
+      this.$multiWindow.open({
+        url: this.url,
+        size: 'normal'
+      })
     },
     close () {
       // 关闭窗口-默认关闭当前打开窗口

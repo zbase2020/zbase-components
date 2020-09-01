@@ -56,10 +56,18 @@ export default {
       type: Boolean,
       default: false
     },
+    normalStyle: {
+      type: String,
+      default: 'height:90vh;bottom:3vh;right:2vh;'
+    },
+    largeStyle: {
+      type: String,
+      default: 'height:100vh;bottom:0vh;right:0vh;'
+    },
     // 正常窗口下左边距离
     left: {
       type: String,
-      default: '300px'
+      default: '210px'
     }
   },
   data () {
@@ -68,16 +76,20 @@ export default {
       pageLists: [],
       size: 'normal',
       // 是否隐藏底部
-      isHideFooter: false
+      isHideFooter: true
     }
   },
   computed: {
     pageStyle() {
-      let style = this.isHideFooter ? 'height:100vh;bottom:0;' : ''
+      // let style = this.isHideFooter ? 'height:90vh;bottom:5vh;right:5vh;' : ''
+      let style = ''
       if (this.size === 'large') {
-        style += 'left:0;'
+        style += (this.largeStyle + 'left:0;')
       } else {
-        style += `left:${this.left};`
+        style += (this.normalStyle + `left:${this.left};`)
+      }
+      if (!this.isHideFooter) {
+        style += 'bottom:5vh;'
       }
       return style
     },
@@ -144,10 +156,10 @@ export default {
 }
 .zbase-multiw__open {
   position: absolute;
-  left: 300px;
-  bottom: 50px;
+  left: 210px;
+  bottom: 5vh;
   right: 0;
-  height: calc(100vh - 50px);
+  height: 95vh;
   background: green;
   transition: 0.3s;
 }
@@ -163,8 +175,8 @@ export default {
 .zbase-multiw__page {
   flex-shrink: 0;
   width: 100%;
-  height: 50px;
-  line-height: 50px;
+  height: 5vh;
+  line-height: 5vh;
   background: rgba(0,0,0,0.3);
   display: flex;
   justify-content: space-between;

@@ -4,9 +4,6 @@
   color: #ccc;
   text-align: center;
 }
-.zbase-horizontal {
-
-}
 .zbase-vertical {
   width: 150px;
 }
@@ -26,6 +23,8 @@
   border-radius: 4px;
   opacity: 0;
   transition: 0.3s;
+  max-height: 100vh;
+  // overflow: auto;
   // display: none;
 }
 .zbase-menu-item {
