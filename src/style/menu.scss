@@ -6,6 +6,7 @@
 }
 .zbase-vertical {
   width: 150px;
+  margin: 0 auto;
 }
 .zbase-submenu {
   position: relative;
@@ -25,6 +26,7 @@
   transition: 0.3s;
   max-height: 100vh;
   overflow-y: auto;
+  z-index: 2001;
   // overflow: hidden;
   // display: none;
 }
@@ -35,10 +37,10 @@
 .zbase-menu-item {
   color: #ccc;
   display: inline-block;
-  width: 80px;
+  width: 100px;
   cursor: pointer;
   transition: 0.3s;
-  padding: 5px;
+  padding: 10px 5px;
   border-radius: 4px;
   margin-bottom: 10px;
 }

@@ -17,8 +17,10 @@ export class MultiWindow {
     this.pages = []
     // 窗口大小
     this.size = (config && config.size) || 'normal'
+    // 显示底部
+    this.showFooter = (config && config.showFooter) || false
     // 隐藏底部
-    this.hideFooter = (config && this.hideFooter) || false
+    // this.hideFooter = (config && this.hideFooter) || false
     // 数据监听
     this.watcher = {
       pagesUrl: [],
@@ -54,7 +56,8 @@ export class MultiWindow {
     })
     this.pages = deepClone(this.db.get('pages') || [])
     this.size = this.db.get('size') || this.size
-    this.hideFooter = this.db.get('hideFooter') || this.hideFooter
+    // this.hideFooter = this.db.get('hideFooter') || this.hideFooter
+    this.showFooter = this.db.get('showFooter') || this.showFooter
     var _this = this
     Object.defineProperties(this.watcher, {
       'pagesUrl': {
@@ -75,12 +78,12 @@ export class MultiWindow {
     this.events.change && this.events.change({
       pages: this.pages,
       size: this.size,
-      hideFooter: this.hideFooter
+      showFooter: this.showFooter
     })
     this.events.boxChange && this.events.boxChange({
       pages: this.pages,
       size: this.size,
-      hideFooter: this.hideFooter
+      showFooter: this.showFooter
     })
   }
   // 监听
@@ -108,22 +111,22 @@ export class MultiWindow {
     this.events[eventName] && this.events[eventName]({
       pages: this.pages,
       size: this.size,
-      hideFooter: this.hideFooter
+      showFooter: this.showFooter
     })
     this.events.change && this.events.change({
       pages: this.pages,
       size: this.size,
-      hideFooter: this.hideFooter
+      showFooter: this.showFooter
     })
     this.events.boxChange && this.events.boxChange({
       pages: this.pages,
       size: this.size,
-      hideFooter: this.hideFooter
+      showFooter: this.showFooter
     })
     if (self == top) {
       this.db.set('pages', this.pages)
       this.db.set('size', this.size)
-      this.db.set('hideFooter', this.hideFooter)
+      this.db.set('showFooter', this.showFooter)
     }
   }
   // 查找下一个显示的窗口
@@ -300,7 +303,7 @@ export class MultiWindow {
 
   }
   // 关闭全部窗口
-  closeAll () {
+  closeAll (info) {
     // 更新主窗口
     if (self != top) {
       window.parent.postMessage({
@@ -380,9 +383,9 @@ export class MultiWindow {
       // return
     }
     if (bol !== undefined) {
-      this.hideFooter = bol
+      this.showFooter = bol || false
     } else {
-      this.hideFooter = !this.hideFooter
+      this.showFooter = !this.showFooter
     }
     this.updateDb('changeFooter')
   }

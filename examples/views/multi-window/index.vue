@@ -11,13 +11,13 @@
         <button @click="hideAll">隐藏</button>
       </div>
       <div>
-        <button @click="handleChangeFooter()">隐藏底部</button>
-        <button @click="handleChangeFooter(false)">显示底部</button>
+        <button @click="handleChangeFooter(false)">隐藏底部</button>
+        <button @click="handleChangeFooter(true)">显示底部</button>
       </div>
     </div>
     <div class="demomw-box">
       <ZbaseMultiWindowBox
-        :hideFooter="true"
+        :showFooter="false"
         :left="'210px'" />
     </div>
   </div>

@@ -25,7 +25,7 @@
     </div>
     <div
       class="zbase-multiw__page"
-      v-if="!isHideFooter"
+      v-if="isShowFooter"
     >
       <ul class="zbase-multiw__pagelis">
         <li
@@ -51,11 +51,16 @@ import { deepHas } from 'zbase-utils'
 export default {
   name: 'multi-window-box',
   props: {
-    // 隐藏底部
-    hideFooter: {
+    // 显示底部
+    showFooter: {
       type: Boolean,
       default: false
     },
+    // 隐藏底部
+    // hideFooter: {
+    //   type: Boolean,
+    //   default: true
+    // },
     normalStyle: {
       type: String,
       default: 'height:90vh;bottom:3vh;right:2vh;'
@@ -75,8 +80,10 @@ export default {
       multiWindow: null,
       pageLists: [],
       size: 'normal',
+      // 是否显示底部
+      isShowFooter: false,
       // 是否隐藏底部
-      isHideFooter: true
+      // isHideFooter: true
     }
   },
   computed: {
@@ -88,7 +95,7 @@ export default {
       } else {
         style += (this.normalStyle + `left:${this.left};`)
       }
-      if (!this.isHideFooter) {
+      if (this.isShowFooter) {
         style += 'bottom:5vh;'
       }
       return style
@@ -101,14 +108,15 @@ export default {
     }
   },
   watch: {
-    hideFooter (val) {
+    // hideFooter (val) {
+    //   this.multiWindow.changeFooter(val)
+    // },
+    showFooter (val) {
       this.multiWindow.changeFooter(val)
     }
   },
   methods: {
     log () {
-      // this.multiWindow.close()
-      console.log('multiWindow-->', this.multiWindow)
     },
     // 打开窗口
     open (item) {
@@ -122,7 +130,8 @@ export default {
       this.multiWindow.on('boxChange', (obj) => {
         this.pageLists = (obj && obj.pages) || []
         this.size = (obj && obj.size) || 'normal'
-        this.isHideFooter = (obj && obj.hideFooter) || false
+        // this.isHideFooter = (obj && obj.hideFooter)
+        this.isShowFooter = (obj && obj.showFooter) || false
       })
     },
     handleReceiveMessage (info) {
@@ -136,10 +145,12 @@ export default {
     }
   },
   mounted () {
-    this.isHideFooter = this.hideFooter
+    // this.isHideFooter = this.hideFooter
+    this.isShowFooter = this.showFooter
     this.multiWindow = MultiWindow.getInstance()
     this.pageLists = this.multiWindow.pages
     this.size = this.multiWindow.size
+    this.isShowFooter = this.multiWindow && this.multiWindow.showFooter
     window.addEventListener('message', this.handleReceiveMessage)
     this.handleChange()
   }
@@ -152,7 +163,6 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255,255,255,0.3);
 }
 .zbase-multiw__open {
   position: absolute;
@@ -160,7 +170,6 @@ export default {
   bottom: 5vh;
   right: 0;
   height: 95vh;
-  background: green;
   transition: 0.3s;
 }
 .zbase-multiw__openlis {
@@ -177,7 +186,6 @@ export default {
   width: 100%;
   height: 5vh;
   line-height: 5vh;
-  background: rgba(0,0,0,0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
