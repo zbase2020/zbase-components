@@ -1,6 +1,6 @@
 {
   "name": "zbase-components",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "lib/index.js",
   "module": "lib/index.js",
   "style": "lib/style/index.css",

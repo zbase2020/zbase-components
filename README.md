@@ -30,7 +30,7 @@ vue多窗口
   <div>
     <button @click="open">打开新窗口</button>
     <button @click="close">关闭窗口</button>
-    <MultiWindowBox />
+    <ZbaseMultiWindowBox />
   </div>
 </template>
 

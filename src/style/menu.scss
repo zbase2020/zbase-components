@@ -11,10 +11,10 @@
 .zbase-submenu {
   position: relative;
 }
-.zbase-submenu:hover > .zbase-submenu__child {
-  opacity: 1;
-  display: block;
-}
+// .zbase-submenu:hover > .zbase-submenu__child {
+//   opacity: 1;
+//   display: block;
+// }
 .zbase-submenu__child {
   position: absolute;
   z-index: 999;
@@ -22,7 +22,7 @@
   top: 0;
   background: #222945;
   border-radius: 4px;
-  opacity: 0;
+  opacity: 1;
   transition: 0.3s;
   max-height: 100vh;
   overflow-y: auto;
