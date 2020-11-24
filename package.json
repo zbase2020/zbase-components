@@ -54,6 +54,6 @@
     "sass": "^1.18.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.6.10",
-    "zbase-utils": "^1.0.3"
+    "zbase-utils": "^1.0.4"
   }
 }
